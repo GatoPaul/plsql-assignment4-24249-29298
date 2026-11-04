@@ -1,0 +1,29 @@
+SET SERVEROUTPUT ON;
+
+
+BEGIN
+    enroll_student(999, 1); 
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Expected Error: ' || SQLERRM);
+END;
+/
+
+
+
+BEGIN
+    enroll_student(1, 1);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Expected Error: ' || SQLERRM);
+END;
+/
+
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Average: ' || get_student_average(3));
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Expected Error: ' || SQLERRM);
+END;
+/
