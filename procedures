@@ -1,0 +1,33 @@
+
+CREATE OR REPLACE PROCEDURE enroll_student (
+    p_student_id IN NUMBER,
+    p_course_id  IN NUMBER
+) IS
+    v_student_exists NUMBER;
+    e_already_enrolled EXCEPTION;
+BEGIN
+   
+    SELECT COUNT(*) INTO v_student_exists FROM students WHERE student_id = p_student_id;
+    IF v_student_exists = 0 THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Student ID ' || p_student_id || ' does not exist.');
+    END IF;
+
+   
+    INSERT INTO enrollments (student_id, course_id, status)
+    VALUES (p_student_id, p_course_id, 'ACTIVE');
+
+    
+    IF SQL%ROWCOUNT > 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Success: Student ' || p_student_id || ' enrolled in course ' || p_course_id);
+    END IF;
+
+    COMMIT;
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+        
+        RAISE_APPLICATION_ERROR(-20005, 'Student ' || p_student_id || ' is already enrolled in course ' || p_course_id);
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20006, 'Enrollment failed: ' || SQLERRM);
+END;
+/
