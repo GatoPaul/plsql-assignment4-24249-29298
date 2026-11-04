@@ -1,0 +1,23 @@
+-- 02_functions/get_student_average.sql
+CREATE OR REPLACE FUNCTION get_student_average (p_student_id IN NUMBER) 
+RETURN NUMBER 
+IS
+    v_average NUMBER;
+BEGIN
+    
+    SELECT AVG(grade) INTO v_average
+    FROM enrollments
+    WHERE student_id = p_student_id AND grade IS NOT NULL;
+
+    IF v_average IS NULL THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Student has no graded enrollments yet.');
+    END IF;
+
+    RETURN v_average;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Student ID does not exist.');
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20003, 'An unexpected error occurred: ' || SQLERRM);
+END;
+/
